@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import {
@@ -23,6 +24,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
+import { ConnectPageModal } from "@/components/dashboard/ConnectPageModal";
 
 const stats = [
   {
@@ -103,8 +105,11 @@ const recentActivity = [
 ];
 
 const Dashboard = () => {
+  const [connectModalOpen, setConnectModalOpen] = useState(false);
+
   return (
     <DashboardLayout>
+      <ConnectPageModal open={connectModalOpen} onOpenChange={setConnectModalOpen} />
       <div className="space-y-8">
         {/* Welcome Section */}
         <motion.div
@@ -170,7 +175,7 @@ const Dashboard = () => {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Connected Pages</CardTitle>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" onClick={() => setConnectModalOpen(true)}>
                 <Plus className="w-4 h-4 mr-2" />
                 Connect Page
               </Button>
@@ -191,7 +196,10 @@ const Dashboard = () => {
                   </div>
                 </div>
                 
-                <button className="flex items-center gap-4 p-4 rounded-xl border-2 border-dashed border-border hover:border-primary/50 hover:bg-muted/30 transition-all">
+                <button 
+                  onClick={() => setConnectModalOpen(true)}
+                  className="flex items-center gap-4 p-4 rounded-xl border-2 border-dashed border-border hover:border-primary/50 hover:bg-muted/30 transition-all"
+                >
                   <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
                     <Plus className="w-6 h-6 text-muted-foreground" />
                   </div>
