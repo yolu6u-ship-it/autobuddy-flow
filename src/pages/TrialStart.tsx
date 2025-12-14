@@ -106,10 +106,10 @@ const TrialStart = () => {
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Background Effects */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,hsl(217,100%,50%,0.1),transparent_50%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,hsl(262,100%,63%,0.1),transparent_50%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,hsl(217,100%,50%,0.1),transparent_50%)] pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,hsl(262,100%,63%,0.1),transparent_50%)] pointer-events-none" />
 
-      <div className="container mx-auto px-4 py-16">
+      <div className="container mx-auto px-4 py-16 relative z-10">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -128,6 +128,7 @@ const TrialStart = () => {
           <Button 
             type="button"
             variant="outline" 
+            className="relative z-20 cursor-pointer"
             onClick={() => navigate("/dashboard")}
           >
             Skip to Dashboard
