@@ -8,9 +8,7 @@ import {
   Clock,
   TrendingUp,
   Plus,
-  Facebook,
   MoreVertical,
-  Check,
   ArrowUpRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -25,6 +23,38 @@ import {
 } from "@/components/ui/table";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { ConnectPageModal } from "@/components/dashboard/ConnectPageModal";
+import { ConnectedPageCard, ConnectedPage } from "@/components/dashboard/ConnectedPageCard";
+import { PageStatsModal } from "@/components/dashboard/PageStatsModal";
+import { toast } from "@/hooks/use-toast";
+
+const initialConnectedPages: ConnectedPage[] = [
+  {
+    id: "1",
+    name: "My Fashion Shop",
+    platform: "facebook",
+    status: "active",
+    connectedAt: "Dec 8, 2024",
+    stats: {
+      messagesReceived: 127,
+      autoReplies: 89,
+      followers: "2.4K",
+      responseTime: "< 1 min",
+    },
+  },
+  {
+    id: "2",
+    name: "Fashion Shop BD",
+    platform: "instagram",
+    status: "active",
+    connectedAt: "Dec 10, 2024",
+    stats: {
+      messagesReceived: 85,
+      autoReplies: 72,
+      followers: "5.1K",
+      responseTime: "< 2 min",
+    },
+  },
+];
 
 const stats = [
   {
@@ -106,10 +136,41 @@ const recentActivity = [
 
 const Dashboard = () => {
   const [connectModalOpen, setConnectModalOpen] = useState(false);
+  const [connectedPages, setConnectedPages] = useState<ConnectedPage[]>(initialConnectedPages);
+  const [statsModalOpen, setStatsModalOpen] = useState(false);
+  const [selectedPage, setSelectedPage] = useState<ConnectedPage | null>(null);
+
+  const handleViewStats = (page: ConnectedPage) => {
+    setSelectedPage(page);
+    setStatsModalOpen(true);
+  };
+
+  const handleToggleStatus = (page: ConnectedPage) => {
+    setConnectedPages((prev) =>
+      prev.map((p) =>
+        p.id === page.id
+          ? { ...p, status: p.status === "active" ? "paused" : "active" }
+          : p
+      )
+    );
+    toast({
+      title: page.status === "active" ? "Page paused" : "Page activated",
+      description: `${page.name} has been ${page.status === "active" ? "paused" : "activated"}.`,
+    });
+  };
+
+  const handleDisconnect = (page: ConnectedPage) => {
+    setConnectedPages((prev) => prev.filter((p) => p.id !== page.id));
+    toast({
+      title: "Page disconnected",
+      description: `${page.name} has been disconnected from AutoFlow.`,
+    });
+  };
 
   return (
     <DashboardLayout>
       <ConnectPageModal open={connectModalOpen} onOpenChange={setConnectModalOpen} />
+      <PageStatsModal open={statsModalOpen} onOpenChange={setStatsModalOpen} page={selectedPage} />
       <div className="space-y-8">
         {/* Welcome Section */}
         <motion.div
@@ -182,19 +243,15 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-4">
-                <div className="flex items-center gap-4 p-4 rounded-xl bg-muted/50 border border-border">
-                  <div className="w-12 h-12 rounded-full bg-[#1877F2] flex items-center justify-center">
-                    <Facebook className="w-6 h-6 text-primary-foreground" />
-                  </div>
-                  <div>
-                    <div className="font-medium">My Fashion Shop</div>
-                    <div className="text-sm text-muted-foreground">Connected</div>
-                  </div>
-                  <div className="flex items-center gap-1 text-xs text-success bg-success/10 px-2 py-1 rounded-full">
-                    <Check className="w-3 h-3" />
-                    Active
-                  </div>
-                </div>
+                {connectedPages.map((page) => (
+                  <ConnectedPageCard
+                    key={page.id}
+                    page={page}
+                    onViewStats={handleViewStats}
+                    onToggleStatus={handleToggleStatus}
+                    onDisconnect={handleDisconnect}
+                  />
+                ))}
                 
                 <button 
                   onClick={() => setConnectModalOpen(true)}
@@ -205,7 +262,7 @@ const Dashboard = () => {
                   </div>
                   <div className="text-left">
                     <div className="font-medium">Add Another Page</div>
-                    <div className="text-sm text-muted-foreground">Connect Facebook</div>
+                    <div className="text-sm text-muted-foreground">Connect more pages</div>
                   </div>
                 </button>
               </div>
