@@ -30,7 +30,7 @@ const paymentMethods = [
 const bkashInstructions = [
   "Go to your Bkash app or Dial *247#",
   'Choose "Send Money"',
-  "Enter our Bkash Account Number: 01710023757",
+  "Enter our Bkash Account Number: +8801401918624",
   "Enter total amount",
   "Now enter your Bkash Account PIN to confirm the transaction",
   "Copy Transaction ID from payment confirmation message and paste that Transaction ID below",
@@ -71,7 +71,7 @@ const Checkout = () => {
   };
 
   const copyAccountNumber = () => {
-    navigator.clipboard.writeText("01710023757");
+    navigator.clipboard.writeText("+8801401918624");
     toast({
       title: "Copied!",
       description: "Account number copied to clipboard",
@@ -239,7 +239,7 @@ const Checkout = () => {
                   <div className="flex justify-between items-center">
                     <div>
                       <p className="text-xs text-muted-foreground mb-1">Account Number:</p>
-                      <p className="text-lg font-bold text-primary">01710023757</p>
+                      <p className="text-lg font-bold text-primary">+8801401918624</p>
                     </div>
                     <Button
                       variant="ghost"
