@@ -27,14 +27,83 @@ const paymentMethods = [
   { id: "card", name: "Credit/Debit Card", icon: CreditCard },
 ];
 
-const bkashInstructions = [
-  "Go to your Bkash app or Dial *247#",
-  'Choose "Send Money"',
-  "Enter our Bkash Account Number: +8801401918624",
-  "Enter total amount",
-  "Now enter your Bkash Account PIN to confirm the transaction",
-  "Copy Transaction ID from payment confirmation message and paste that Transaction ID below",
-];
+const paymentInstructions: Record<string, { title: string; color: string; accountNumber: string; instructions: string[] }> = {
+  bkash: {
+    title: "bKash Payment Instructions",
+    color: "#E2136E",
+    accountNumber: "+8801401918624",
+    instructions: [
+      "Go to your bKash app or Dial *247#",
+      'Choose "Send Money"',
+      "Enter our bKash Account Number: +8801401918624",
+      "Enter total amount",
+      "Now enter your bKash Account PIN to confirm the transaction",
+      "Copy Transaction ID from payment confirmation message and paste that Transaction ID below",
+    ],
+  },
+  nagad: {
+    title: "Nagad Payment Instructions",
+    color: "#F6921E",
+    accountNumber: "+8801401918624",
+    instructions: [
+      "Go to your Nagad app or Dial *167#",
+      'Choose "Send Money"',
+      "Enter our Nagad Account Number: +8801401918624",
+      "Enter total amount",
+      "Now enter your Nagad Account PIN to confirm the transaction",
+      "Copy Transaction ID from payment confirmation message and paste that Transaction ID below",
+    ],
+  },
+  rocket: {
+    title: "Rocket Payment Instructions",
+    color: "#8C3494",
+    accountNumber: "+8801401918624",
+    instructions: [
+      "Go to your Rocket app or Dial *322#",
+      'Choose "Send Money"',
+      "Enter our Rocket Account Number: +8801401918624",
+      "Enter total amount",
+      "Now enter your Rocket Account PIN to confirm the transaction",
+      "Copy Transaction ID from payment confirmation message and paste that Transaction ID below",
+    ],
+  },
+  upay: {
+    title: "Upay Payment Instructions",
+    color: "#00A651",
+    accountNumber: "+8801401918624",
+    instructions: [
+      "Go to your Upay app",
+      'Choose "Send Money"',
+      "Enter our Upay Account Number: +8801401918624",
+      "Enter total amount",
+      "Now enter your Upay Account PIN to confirm the transaction",
+      "Copy Transaction ID from payment confirmation message and paste that Transaction ID below",
+    ],
+  },
+  bank: {
+    title: "Bank Transfer Instructions",
+    color: "#1E40AF",
+    accountNumber: "1234567890123",
+    instructions: [
+      "Log in to your bank app or visit your nearest branch",
+      "Select Fund Transfer",
+      "Enter our Bank Account Number: 1234567890123",
+      "Bank Name: Example Bank Ltd.",
+      "Enter total amount and complete the transfer",
+      "Copy Transaction ID/Reference Number and paste below",
+    ],
+  },
+  card: {
+    title: "Credit/Debit Card Instructions",
+    color: "#6366F1",
+    accountNumber: "",
+    instructions: [
+      "Card payment gateway will be available soon",
+      "For now, please use mobile banking or bank transfer",
+      "Contact support for alternative payment options",
+    ],
+  },
+};
 
 const Checkout = () => {
   const [searchParams] = useSearchParams();
@@ -70,8 +139,10 @@ const Checkout = () => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  const currentPaymentInfo = paymentInstructions[formData.paymentMethod] || paymentInstructions.bkash;
+
   const copyAccountNumber = () => {
-    navigator.clipboard.writeText("+8801401918624");
+    navigator.clipboard.writeText(currentPaymentInfo.accountNumber);
     toast({
       title: "Copied!",
       description: "Account number copied to clipboard",
@@ -215,17 +286,32 @@ const Checkout = () => {
                 </div>
               </div>
 
-              {/* Payment Instructions Card */}
-              <div className="bg-card rounded-2xl border p-6">
+              {/* Dynamic Payment Instructions Card */}
+              <motion.div 
+                key={formData.paymentMethod}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2 }}
+                className="bg-card rounded-2xl border p-6"
+              >
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-lg bg-[#E2136E]/10 flex items-center justify-center">
-                    <Smartphone className="w-5 h-5 text-[#E2136E]" />
+                  <div 
+                    className="w-10 h-10 rounded-lg flex items-center justify-center"
+                    style={{ backgroundColor: `${currentPaymentInfo.color}15` }}
+                  >
+                    {formData.paymentMethod === "bank" ? (
+                      <Building2 className="w-5 h-5" style={{ color: currentPaymentInfo.color }} />
+                    ) : formData.paymentMethod === "card" ? (
+                      <CreditCard className="w-5 h-5" style={{ color: currentPaymentInfo.color }} />
+                    ) : (
+                      <Smartphone className="w-5 h-5" style={{ color: currentPaymentInfo.color }} />
+                    )}
                   </div>
-                  <h3 className="font-semibold">bKash Payment Instructions</h3>
+                  <h3 className="font-semibold">{currentPaymentInfo.title}</h3>
                 </div>
 
                 <ol className="space-y-3">
-                  {bkashInstructions.map((instruction, index) => (
+                  {currentPaymentInfo.instructions.map((instruction, index) => (
                     <li key={index} className="flex gap-3 text-sm">
                       <span className="flex-shrink-0 w-5 h-5 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-medium">
                         {index + 1}
@@ -235,23 +321,25 @@ const Checkout = () => {
                   ))}
                 </ol>
 
-                <div className="mt-6 p-4 bg-muted/50 rounded-xl">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <p className="text-xs text-muted-foreground mb-1">Account Number:</p>
-                      <p className="text-lg font-bold text-primary">+8801401918624</p>
+                {currentPaymentInfo.accountNumber && (
+                  <div className="mt-6 p-4 bg-muted/50 rounded-xl">
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <p className="text-xs text-muted-foreground mb-1">Account Number:</p>
+                        <p className="text-lg font-bold text-primary">{currentPaymentInfo.accountNumber}</p>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={copyAccountNumber}
+                        className="hover:bg-primary/10"
+                      >
+                        <Copy className="w-4 h-4" />
+                      </Button>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={copyAccountNumber}
-                      className="hover:bg-primary/10"
-                    >
-                      <Copy className="w-4 h-4" />
-                    </Button>
                   </div>
-                </div>
-              </div>
+                )}
+              </motion.div>
             </motion.div>
 
             {/* Checkout Form - Right Side */}
