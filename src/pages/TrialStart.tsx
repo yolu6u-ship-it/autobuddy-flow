@@ -59,6 +59,23 @@ const TrialStart = () => {
     return () => clearInterval(timer);
   }, []);
 
+  const handleStepAction = (stepNumber: number) => {
+    switch (stepNumber) {
+      case 1:
+        // Connect Facebook - navigate to dashboard with connect modal trigger
+        navigate("/dashboard?connect=true");
+        break;
+      case 2:
+        // Create Automation - navigate to automations page
+        navigate("/dashboard/automations?create=true");
+        break;
+      case 3:
+        // Done - navigate to dashboard
+        navigate("/dashboard");
+        break;
+    }
+  };
+
   const steps = [
     {
       number: 1,
@@ -193,6 +210,7 @@ const TrialStart = () => {
                   variant={index === 0 ? "gradient" : "outline"}
                   size="sm"
                   className="w-full"
+                  onClick={() => handleStepAction(step.number)}
                 >
                   {step.action}
                   <ChevronRight className="w-4 h-4 ml-1" />

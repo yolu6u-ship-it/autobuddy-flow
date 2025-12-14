@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   MessageSquare,
   Zap,
@@ -135,10 +135,21 @@ const recentActivity = [
 ];
 
 const Dashboard = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [connectModalOpen, setConnectModalOpen] = useState(false);
   const [connectedPages, setConnectedPages] = useState<ConnectedPage[]>(initialConnectedPages);
   const [statsModalOpen, setStatsModalOpen] = useState(false);
   const [selectedPage, setSelectedPage] = useState<ConnectedPage | null>(null);
+
+  // Handle ?connect=true query param from onboarding
+  useEffect(() => {
+    if (searchParams.get("connect") === "true") {
+      setConnectModalOpen(true);
+      // Clear the query param
+      searchParams.delete("connect");
+      setSearchParams(searchParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   const handleViewStats = (page: ConnectedPage) => {
     setSelectedPage(page);

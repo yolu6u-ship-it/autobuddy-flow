@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import AutomationCard, { Automation } from "@/components/automations/AutomationCard";
 import AutomationBuilderModal from "@/components/automations/AutomationBuilderModal";
@@ -80,6 +80,7 @@ const initialAutomations: Automation[] = [
 
 const Automations = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { toast } = useToast();
   const [automations, setAutomations] = useState<Automation[]>(initialAutomations);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -87,6 +88,16 @@ const Automations = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+
+  // Handle ?create=true query param from onboarding
+  useEffect(() => {
+    if (searchParams.get("create") === "true") {
+      setIsModalOpen(true);
+      // Clear the query param
+      searchParams.delete("create");
+      setSearchParams(searchParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   const filteredAutomations = automations.filter((auto) => {
     const matchesSearch =
