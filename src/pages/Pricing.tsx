@@ -5,107 +5,7 @@ import { Button } from "@/components/ui/button";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { useRef, useState } from "react";
-
-const plans = [
-  {
-    name: "Free Trial",
-    badge: "7 Days Free",
-    badgeColor: "bg-success/10 text-success",
-    price: "৳0",
-    period: "7 days",
-    description: "Try AutoFlow risk-free",
-    features: [
-      "Full access to all features",
-      "Unlimited automations",
-      "Unlimited messages",
-      "Email support",
-      "Bengali AI responses",
-    ],
-    cta: "Start Free Trial",
-    ctaVariant: "success" as const,
-    note: "No credit card required",
-    popular: false,
-  },
-  {
-    name: "Starter",
-    badge: "POPULAR",
-    badgeColor: "bg-primary/10 text-primary",
-    price: "৳499",
-    period: "/month",
-    description: "Perfect for beginners",
-    features: [
-      "1 Facebook page",
-      "100 automations/month",
-      "Message auto-reply",
-      "Basic analytics",
-      "Email support",
-    ],
-    cta: "Choose Starter",
-    ctaVariant: "default" as const,
-    popular: true,
-  },
-  {
-    name: "Professional",
-    badge: "BEST VALUE",
-    badgeColor: "bg-secondary/10 text-secondary",
-    price: "৳2,499",
-    period: "/6 months",
-    originalPrice: "৳2,994",
-    description: "Most popular choice",
-    features: [
-      "5 Facebook pages",
-      "1000 automations/month",
-      "Message, Comment, Image, Voice",
-      "Advanced analytics",
-      "Priority email support",
-    ],
-    cta: "Choose Professional",
-    ctaVariant: "gradient" as const,
-    savings: "Save ৳500",
-    popular: false,
-  },
-  {
-    name: "Business",
-    badge: "ULTIMATE",
-    badgeColor: "bg-accent/10 text-accent",
-    price: "৳4,999",
-    period: "/year",
-    originalPrice: "৳5,988",
-    description: "For serious sellers",
-    features: [
-      "Unlimited pages",
-      "Unlimited automations",
-      "All features included",
-      "WhatsApp automation (coming)",
-      "E-commerce integration (coming)",
-      "24/7 Phone + Email support",
-      "Custom training session",
-    ],
-    cta: "Choose Business",
-    ctaVariant: "default" as const,
-    savings: "Save ৳989",
-    popular: false,
-  },
-  {
-    name: "Lifetime",
-    badge: "EXCLUSIVE",
-    badgeColor: "bg-gradient-to-r from-primary to-secondary text-primary-foreground",
-    price: "৳9,999",
-    period: "one-time",
-    description: "Pay once, use forever",
-    features: [
-      "Everything in Business",
-      "Lifetime updates",
-      "All future features free",
-      "Priority support forever",
-      "VIP onboarding",
-      "Custom integrations",
-    ],
-    cta: "Contact for Lifetime",
-    ctaVariant: "gradient" as const,
-    popular: false,
-  },
-];
+import { plans } from "@/data/plans";
 
 const Pricing = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -232,7 +132,7 @@ const Pricing = () => {
                       className="w-full"
                       asChild
                     >
-                      <Link to="/signup">
+                      <Link to={`/checkout?plan=${plan.id}`}>
                         {plan.cta}
                         <ArrowRight className="w-4 h-4 ml-1" />
                       </Link>
@@ -335,7 +235,7 @@ const Pricing = () => {
                     className="w-full"
                     asChild
                   >
-                    <Link to="/signup">
+                    <Link to={`/checkout?plan=${plan.id}`}>
                       {plan.cta}
                       <ArrowRight className="w-4 h-4 ml-1" />
                     </Link>

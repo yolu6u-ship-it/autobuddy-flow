@@ -10,6 +10,7 @@ import Index from "./pages/Index";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import Pricing from "./pages/Pricing";
+import Checkout from "./pages/Checkout";
 import Contact from "./pages/Contact";
 import TrialStart from "./pages/TrialStart";
 import Dashboard from "./pages/Dashboard";
@@ -34,6 +35,7 @@ const App = () => (
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/pricing" element={<Pricing />} />
+                <Route path="/checkout" element={<Checkout />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/trial-start" element={<TrialStart />} />
                 <Route path="/dashboard" element={<Dashboard />} />
