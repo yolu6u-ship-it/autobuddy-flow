@@ -189,14 +189,14 @@ const TrialStart = () => {
             Get Started in 3 Easy Steps
           </motion.h2>
 
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-3 gap-6 items-stretch">
             {steps.map((step, index) => (
               <motion.div
                 key={step.number}
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 + index * 0.1 }}
-                className="relative bg-card rounded-2xl p-6 border border-border hover:border-primary/30 transition-all duration-300 hover:shadow-card group"
+                className="relative bg-card rounded-2xl p-6 border border-border hover:border-primary/30 transition-all duration-300 hover:shadow-card group flex flex-col h-full"
               >
                 {/* Step Number */}
                 <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${step.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
@@ -207,14 +207,14 @@ const TrialStart = () => {
                   Step {step.number}
                 </div>
                 <h3 className="text-lg font-bold mb-2">{step.title}</h3>
-                <p className="text-sm text-muted-foreground mb-4">
+                <p className="text-sm text-muted-foreground flex-grow">
                   {step.description}
                 </p>
 
                 <Button
                   variant={index === 0 ? "gradient" : "outline"}
                   size="sm"
-                  className="w-full"
+                  className="w-full mt-4"
                   onClick={() => handleStepAction(step.number)}
                 >
                   {step.action}
