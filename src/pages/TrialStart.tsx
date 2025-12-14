@@ -125,7 +125,11 @@ const TrialStart = () => {
               Auto<span className="gradient-text">Flow</span>
             </span>
           </Link>
-          <Button variant="outline" onClick={() => navigate("/dashboard")}>
+          <Button 
+            type="button"
+            variant="outline" 
+            onClick={() => navigate("/dashboard")}
+          >
             Skip to Dashboard
           </Button>
         </motion.div>
@@ -249,7 +253,12 @@ const TrialStart = () => {
           </div>
 
           <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
-            <Button variant="hero" size="xl" onClick={() => navigate("/dashboard")}>
+            <Button 
+              type="button"
+              variant="hero" 
+              size="xl" 
+              onClick={() => navigate("/dashboard")}
+            >
               Go to Dashboard
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
