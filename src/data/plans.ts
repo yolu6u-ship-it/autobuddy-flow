@@ -31,13 +31,13 @@ export const formatPrice = (amount: number): string => {
   return `৳${amount.toLocaleString()}`;
 };
 
-// Original prices before discount
+// Original prices before discount (clean numbers for proper 75% discount math)
 const originalPrices = {
   "free-trial": 0,
-  starter: 1996, // Original ৳1,996, after 75% = ৳499
-  professional: 9996, // Original ৳9,996, after 75% = ৳2,499
-  business: 19996, // Original ৳19,996, after 75% = ৳4,999
-  lifetime: 39996, // Original ৳39,996, after 75% = ৳9,999
+  starter: 1999, // Original ৳1,999, after 75% = ৳499 (save ৳1,500)
+  professional: 9999, // Original ৳9,999, after 75% = ৳2,499 (save ৳7,500)
+  business: 19999, // Original ৳19,999, after 75% = ৳4,999 (save ৳15,000)
+  lifetime: 39999, // Original ৳39,999, after 75% = ৳9,999 (save ৳30,000)
 };
 
 export const plans: Plan[] = [
