@@ -31,13 +31,13 @@ export const formatPrice = (amount: number): string => {
   return `৳${amount.toLocaleString()}`;
 };
 
-// Original prices before discount (clean numbers for proper 75% discount math)
-const originalPrices = {
-  "free-trial": 0,
-  starter: 1999, // Original ৳1,999, after 75% = ৳499 (save ৳1,500)
-  professional: 9999, // Original ৳9,999, after 75% = ৳2,499 (save ৳7,500)
-  business: 19999, // Original ৳19,999, after 75% = ৳4,999 (save ৳15,000)
-  lifetime: 39999, // Original ৳39,999, after 75% = ৳9,999 (save ৳30,000)
+// Exact pricing configuration for psychological pricing (ends in 99)
+const pricingConfig = {
+  "free-trial": { original: 0, final: 0, savings: 0 },
+  starter: { original: 2000, final: 499, savings: 1501 },
+  professional: { original: 10000, final: 2499, savings: 7501 },
+  business: { original: 20000, final: 4999, savings: 15001 },
+  lifetime: { original: 40000, final: 9999, savings: 30001 },
 };
 
 export const plans: Plan[] = [
@@ -67,8 +67,8 @@ export const plans: Plan[] = [
     name: "Starter",
     badge: "POPULAR",
     badgeColor: "bg-primary/10 text-primary",
-    price: formatPrice(calculateDiscount(originalPrices.starter).discountedPrice),
-    priceNumber: calculateDiscount(originalPrices.starter).discountedPrice,
+    price: formatPrice(pricingConfig.starter.final),
+    priceNumber: pricingConfig.starter.final,
     period: "/month",
     description: "Perfect for beginners",
     features: [
@@ -81,16 +81,16 @@ export const plans: Plan[] = [
     cta: "Choose Starter",
     ctaVariant: "default",
     popular: true,
-    originalPrice: formatPrice(originalPrices.starter),
-    savings: `Save ${formatPrice(calculateDiscount(originalPrices.starter).savings)}`,
+    originalPrice: formatPrice(pricingConfig.starter.original),
+    savings: `Save ${formatPrice(pricingConfig.starter.savings)}`,
   },
   {
     id: "professional",
     name: "Professional",
     badge: "BEST VALUE",
     badgeColor: "bg-secondary/10 text-secondary",
-    price: formatPrice(calculateDiscount(originalPrices.professional).discountedPrice),
-    priceNumber: calculateDiscount(originalPrices.professional).discountedPrice,
+    price: formatPrice(pricingConfig.professional.final),
+    priceNumber: pricingConfig.professional.final,
     period: "/6 months",
     description: "Most popular choice",
     features: [
@@ -103,16 +103,16 @@ export const plans: Plan[] = [
     cta: "Choose Professional",
     ctaVariant: "gradient",
     popular: false,
-    originalPrice: formatPrice(originalPrices.professional),
-    savings: `Save ${formatPrice(calculateDiscount(originalPrices.professional).savings)}`,
+    originalPrice: formatPrice(pricingConfig.professional.original),
+    savings: `Save ${formatPrice(pricingConfig.professional.savings)}`,
   },
   {
     id: "business",
     name: "Business",
     badge: "ULTIMATE",
     badgeColor: "bg-accent/10 text-accent",
-    price: formatPrice(calculateDiscount(originalPrices.business).discountedPrice),
-    priceNumber: calculateDiscount(originalPrices.business).discountedPrice,
+    price: formatPrice(pricingConfig.business.final),
+    priceNumber: pricingConfig.business.final,
     period: "/year",
     description: "For serious sellers",
     features: [
@@ -127,16 +127,16 @@ export const plans: Plan[] = [
     cta: "Choose Business",
     ctaVariant: "default",
     popular: false,
-    originalPrice: formatPrice(originalPrices.business),
-    savings: `Save ${formatPrice(calculateDiscount(originalPrices.business).savings)}`,
+    originalPrice: formatPrice(pricingConfig.business.original),
+    savings: `Save ${formatPrice(pricingConfig.business.savings)}`,
   },
   {
     id: "lifetime",
     name: "Lifetime",
     badge: "EXCLUSIVE",
     badgeColor: "bg-gradient-to-r from-primary to-secondary text-primary-foreground",
-    price: formatPrice(calculateDiscount(originalPrices.lifetime).discountedPrice),
-    priceNumber: calculateDiscount(originalPrices.lifetime).discountedPrice,
+    price: formatPrice(pricingConfig.lifetime.final),
+    priceNumber: pricingConfig.lifetime.final,
     period: "one-time",
     description: "Pay once, use forever",
     features: [
@@ -150,8 +150,8 @@ export const plans: Plan[] = [
     cta: "Contact for Lifetime",
     ctaVariant: "gradient",
     popular: false,
-    originalPrice: formatPrice(originalPrices.lifetime),
-    savings: `Save ${formatPrice(calculateDiscount(originalPrices.lifetime).savings)}`,
+    originalPrice: formatPrice(pricingConfig.lifetime.original),
+    savings: `Save ${formatPrice(pricingConfig.lifetime.savings)}`,
   },
 ];
 
