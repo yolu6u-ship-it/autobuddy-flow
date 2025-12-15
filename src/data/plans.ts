@@ -16,6 +16,30 @@ export interface Plan {
   savings?: string;
 }
 
+// Discount configuration
+export const DISCOUNT_PERCENTAGE = 75;
+
+// Helper function to calculate discounted price
+export const calculateDiscount = (originalPrice: number): { discountedPrice: number; savings: number } => {
+  const discountedPrice = Math.round(originalPrice * (1 - DISCOUNT_PERCENTAGE / 100));
+  const savings = originalPrice - discountedPrice;
+  return { discountedPrice, savings };
+};
+
+// Format price in Bengali Taka
+export const formatPrice = (amount: number): string => {
+  return `৳${amount.toLocaleString()}`;
+};
+
+// Original prices before discount
+const originalPrices = {
+  "free-trial": 0,
+  starter: 1996, // Original ৳1,996, after 75% = ৳499
+  professional: 9996, // Original ৳9,996, after 75% = ৳2,499
+  business: 19996, // Original ৳19,996, after 75% = ৳4,999
+  lifetime: 39996, // Original ৳39,996, after 75% = ৳9,999
+};
+
 export const plans: Plan[] = [
   {
     id: "free-trial",
@@ -43,8 +67,8 @@ export const plans: Plan[] = [
     name: "Starter",
     badge: "POPULAR",
     badgeColor: "bg-primary/10 text-primary",
-    price: "৳499",
-    priceNumber: 499,
+    price: formatPrice(calculateDiscount(originalPrices.starter).discountedPrice),
+    priceNumber: calculateDiscount(originalPrices.starter).discountedPrice,
     period: "/month",
     description: "Perfect for beginners",
     features: [
@@ -57,16 +81,17 @@ export const plans: Plan[] = [
     cta: "Choose Starter",
     ctaVariant: "default",
     popular: true,
+    originalPrice: formatPrice(originalPrices.starter),
+    savings: `Save ${formatPrice(calculateDiscount(originalPrices.starter).savings)}`,
   },
   {
     id: "professional",
     name: "Professional",
     badge: "BEST VALUE",
     badgeColor: "bg-secondary/10 text-secondary",
-    price: "৳2,499",
-    priceNumber: 2499,
+    price: formatPrice(calculateDiscount(originalPrices.professional).discountedPrice),
+    priceNumber: calculateDiscount(originalPrices.professional).discountedPrice,
     period: "/6 months",
-    originalPrice: "৳2,994",
     description: "Most popular choice",
     features: [
       "5 Facebook pages",
@@ -77,18 +102,18 @@ export const plans: Plan[] = [
     ],
     cta: "Choose Professional",
     ctaVariant: "gradient",
-    savings: "Save ৳500",
     popular: false,
+    originalPrice: formatPrice(originalPrices.professional),
+    savings: `Save ${formatPrice(calculateDiscount(originalPrices.professional).savings)}`,
   },
   {
     id: "business",
     name: "Business",
     badge: "ULTIMATE",
     badgeColor: "bg-accent/10 text-accent",
-    price: "৳4,999",
-    priceNumber: 4999,
+    price: formatPrice(calculateDiscount(originalPrices.business).discountedPrice),
+    priceNumber: calculateDiscount(originalPrices.business).discountedPrice,
     period: "/year",
-    originalPrice: "৳5,988",
     description: "For serious sellers",
     features: [
       "Unlimited pages",
@@ -101,16 +126,17 @@ export const plans: Plan[] = [
     ],
     cta: "Choose Business",
     ctaVariant: "default",
-    savings: "Save ৳989",
     popular: false,
+    originalPrice: formatPrice(originalPrices.business),
+    savings: `Save ${formatPrice(calculateDiscount(originalPrices.business).savings)}`,
   },
   {
     id: "lifetime",
     name: "Lifetime",
     badge: "EXCLUSIVE",
     badgeColor: "bg-gradient-to-r from-primary to-secondary text-primary-foreground",
-    price: "৳9,999",
-    priceNumber: 9999,
+    price: formatPrice(calculateDiscount(originalPrices.lifetime).discountedPrice),
+    priceNumber: calculateDiscount(originalPrices.lifetime).discountedPrice,
     period: "one-time",
     description: "Pay once, use forever",
     features: [
@@ -124,6 +150,8 @@ export const plans: Plan[] = [
     cta: "Contact for Lifetime",
     ctaVariant: "gradient",
     popular: false,
+    originalPrice: formatPrice(originalPrices.lifetime),
+    savings: `Save ${formatPrice(calculateDiscount(originalPrices.lifetime).savings)}`,
   },
 ];
 

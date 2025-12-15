@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Check, Copy, Smartphone, Building2, CreditCard } from "lucide-react";
+import { ArrowLeft, Check, Copy, Smartphone, Building2, CreditCard, Shield, Clock, Gift, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,16 +15,17 @@ import {
 } from "@/components/ui/select";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import PromoBanner from "@/components/ui/promo-banner";
 import { toast } from "@/hooks/use-toast";
-import { getPlanById, Plan } from "@/data/plans";
+import { getPlanById, Plan, DISCOUNT_PERCENTAGE } from "@/data/plans";
 
 const paymentMethods = [
-  { id: "bkash", name: "bKash", icon: Smartphone },
-  { id: "nagad", name: "Nagad", icon: Smartphone },
-  { id: "rocket", name: "Rocket", icon: Smartphone },
-  { id: "upay", name: "Upay", icon: Smartphone },
-  { id: "bank", name: "Bank Transfer", icon: Building2 },
-  { id: "card", name: "Credit/Debit Card", icon: CreditCard },
+  { id: "bkash", name: "bKash", icon: Smartphone, color: "#E2136E" },
+  { id: "nagad", name: "Nagad", icon: Smartphone, color: "#F6921E" },
+  { id: "rocket", name: "Rocket", icon: Smartphone, color: "#8C3494" },
+  { id: "upay", name: "Upay", icon: Smartphone, color: "#00A651" },
+  { id: "bank", name: "Bank Transfer", icon: Building2, color: "#1E40AF" },
+  { id: "card", name: "Card", icon: CreditCard, color: "#6366F1" },
 ];
 
 const paymentInstructions: Record<string, { title: string; color: string; accountNumber: string; instructions: string[] }> = {
@@ -35,10 +36,10 @@ const paymentInstructions: Record<string, { title: string; color: string; accoun
     instructions: [
       "Go to your bKash app or Dial *247#",
       'Choose "Send Money"',
-      "Enter our bKash Account Number: +8801401918624",
+      "Enter our bKash Account Number",
       "Enter total amount",
-      "Now enter your bKash Account PIN to confirm the transaction",
-      "Copy Transaction ID from payment confirmation message and paste that Transaction ID below",
+      "Confirm with your PIN",
+      "Copy Transaction ID and paste below",
     ],
   },
   nagad: {
@@ -48,10 +49,10 @@ const paymentInstructions: Record<string, { title: string; color: string; accoun
     instructions: [
       "Go to your Nagad app or Dial *167#",
       'Choose "Send Money"',
-      "Enter our Nagad Account Number: +8801401918624",
+      "Enter our Nagad Account Number",
       "Enter total amount",
-      "Now enter your Nagad Account PIN to confirm the transaction",
-      "Copy Transaction ID from payment confirmation message and paste that Transaction ID below",
+      "Confirm with your PIN",
+      "Copy Transaction ID and paste below",
     ],
   },
   rocket: {
@@ -61,10 +62,10 @@ const paymentInstructions: Record<string, { title: string; color: string; accoun
     instructions: [
       "Go to your Rocket app or Dial *322#",
       'Choose "Send Money"',
-      "Enter our Rocket Account Number: +8801401918624",
+      "Enter our Rocket Account Number",
       "Enter total amount",
-      "Now enter your Rocket Account PIN to confirm the transaction",
-      "Copy Transaction ID from payment confirmation message and paste that Transaction ID below",
+      "Confirm with your PIN",
+      "Copy Transaction ID and paste below",
     ],
   },
   upay: {
@@ -74,10 +75,10 @@ const paymentInstructions: Record<string, { title: string; color: string; accoun
     instructions: [
       "Go to your Upay app",
       'Choose "Send Money"',
-      "Enter our Upay Account Number: +8801401918624",
+      "Enter our Upay Account Number",
       "Enter total amount",
-      "Now enter your Upay Account PIN to confirm the transaction",
-      "Copy Transaction ID from payment confirmation message and paste that Transaction ID below",
+      "Confirm with your PIN",
+      "Copy Transaction ID and paste below",
     ],
   },
   bank: {
@@ -85,22 +86,22 @@ const paymentInstructions: Record<string, { title: string; color: string; accoun
     color: "#1E40AF",
     accountNumber: "1234567890123",
     instructions: [
-      "Log in to your bank app or visit your nearest branch",
+      "Log in to your bank app or visit your branch",
       "Select Fund Transfer",
-      "Enter our Bank Account Number: 1234567890123",
+      "Enter our Bank Account Number",
       "Bank Name: Example Bank Ltd.",
-      "Enter total amount and complete the transfer",
-      "Copy Transaction ID/Reference Number and paste below",
+      "Complete the transfer",
+      "Copy Transaction ID and paste below",
     ],
   },
   card: {
-    title: "Credit/Debit Card Instructions",
+    title: "Card Payment",
     color: "#6366F1",
     accountNumber: "",
     instructions: [
-      "Card payment gateway will be available soon",
-      "For now, please use mobile banking or bank transfer",
-      "Contact support for alternative payment options",
+      "Card payment gateway coming soon",
+      "Please use mobile banking for now",
+      "Contact support for alternatives",
     ],
   },
 };
@@ -140,6 +141,7 @@ const Checkout = () => {
   };
 
   const currentPaymentInfo = paymentInstructions[formData.paymentMethod] || paymentInstructions.bkash;
+  const currentPaymentMethod = paymentMethods.find(m => m.id === formData.paymentMethod);
 
   const copyAccountNumber = () => {
     navigator.clipboard.writeText(currentPaymentInfo.accountNumber);
@@ -171,8 +173,6 @@ const Checkout = () => {
     }
 
     setIsSubmitting(true);
-    
-    // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 2000));
     
     toast({
@@ -184,10 +184,11 @@ const Checkout = () => {
     navigate("/dashboard");
   };
 
-  const showExpandedFeatures = plan.features.length > 4;
-
   return (
     <div className="min-h-screen bg-background">
+      {/* Grand Opening Banner */}
+      <PromoBanner discount={DISCOUNT_PERCENTAGE} />
+      
       <Header />
 
       <main className="pt-24 pb-16">
@@ -196,145 +197,152 @@ const Checkout = () => {
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="mb-6"
+            className="mb-8"
           >
             <Link
               to="/pricing"
-              className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+              className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors group"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
               Back to Pricing
             </Link>
           </motion.div>
 
-          <div className="grid lg:grid-cols-5 gap-8">
-            {/* Order Summary - Left Side */}
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
+            {/* Left Side - Order Summary */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="lg:col-span-2 space-y-6"
+              className="space-y-6"
             >
-              {/* Order Summary Card */}
-              <div className="bg-card rounded-2xl border p-6">
-                <h2 className="text-xl font-bold mb-6">Order Summary</h2>
-
-                {/* Plan Name & Price */}
-                <div className="flex justify-between items-start mb-4">
-                  <span className="font-medium">{plan.name}</span>
-                  <span className="font-semibold">{plan.price}</span>
-                </div>
-
-                {/* Original Price if discounted */}
-                {plan.originalPrice && (
-                  <>
-                    <div className="flex justify-between text-sm text-muted-foreground mb-1">
-                      <span>Regular Price</span>
-                      <span className="line-through">{plan.originalPrice}</span>
-                    </div>
-                    <div className="flex justify-between text-sm mb-4">
-                      <span>Early Bird Discount</span>
-                      <span className="text-success font-medium">{plan.savings}</span>
-                    </div>
-                  </>
-                )}
-
-                <div className="border-t pt-4 mb-6">
-                  <div className="flex justify-between items-baseline">
-                    <span className="font-semibold">Total</span>
-                    <div className="text-right">
-                      <span className="text-2xl font-bold text-primary">{plan.price}</span>
-                      {plan.savings && (
-                        <p className="text-sm text-success mt-1">You save {plan.savings?.replace('Save ', '')}</p>
-                      )}
+              {/* Premium Order Card */}
+              <div className="relative overflow-hidden rounded-3xl border border-border/50 bg-gradient-to-br from-card via-card to-muted/20">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-primary/5 to-secondary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+                
+                <div className="relative p-6 lg:p-8">
+                  {/* Header */}
+                  <div className="flex items-start justify-between mb-6">
+                    <div>
+                      <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold mb-3 ${plan.badgeColor}`}>
+                        <Sparkles className="w-3 h-3" />
+                        {plan.badge}
+                      </span>
+                      <h2 className="text-2xl font-bold">{plan.name} Plan</h2>
+                      <p className="text-muted-foreground mt-1">{plan.description}</p>
                     </div>
                   </div>
-                </div>
 
-                {/* What You Get Section */}
-                <div className="space-y-3">
-                  <div className="bg-accent/30 rounded-xl p-4">
-                    <h4 className="text-sm font-semibold text-primary mb-3">What You Get:</h4>
-                    <ul className="space-y-2">
-                      {plan.features.slice(0, 4).map((feature, index) => (
-                        <li key={index} className="flex items-start gap-2 text-sm">
-                          <Check className="w-4 h-4 text-success shrink-0 mt-0.5" />
+                  {/* Price Display */}
+                  <div className="bg-muted/30 rounded-2xl p-5 mb-6">
+                    {plan.originalPrice && (
+                      <div className="flex items-center gap-3 mb-2">
+                        <span className="text-lg text-muted-foreground line-through">{plan.originalPrice}</span>
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-destructive/10 text-destructive">
+                          <Gift className="w-3 h-3" />
+                          {DISCOUNT_PERCENTAGE}% OFF
+                        </span>
+                      </div>
+                    )}
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-4xl font-extrabold gradient-text">{plan.price}</span>
+                      <span className="text-muted-foreground">{plan.period}</span>
+                    </div>
+                    {plan.savings && (
+                      <p className="text-success font-medium mt-2 flex items-center gap-1">
+                        <Check className="w-4 h-4" />
+                        You {plan.savings}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Features */}
+                  <div className="space-y-4">
+                    <h4 className="font-semibold flex items-center gap-2">
+                      <Check className="w-5 h-5 text-success" />
+                      What's Included
+                    </h4>
+                    <ul className="grid gap-3">
+                      {plan.features.map((feature, index) => (
+                        <li key={index} className="flex items-start gap-3 text-sm">
+                          <div className="w-5 h-5 rounded-full bg-success/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <Check className="w-3 h-3 text-success" />
+                          </div>
                           <span>{feature}</span>
                         </li>
                       ))}
-                      {showExpandedFeatures && (
-                        <li className="text-sm text-muted-foreground">
-                          + {plan.features.length - 4} more items
-                        </li>
-                      )}
                     </ul>
                   </div>
 
-                  {showExpandedFeatures && (
-                    <div className="bg-primary/5 rounded-xl p-4">
-                      <h4 className="text-sm font-semibold text-primary mb-3">What You Get:</h4>
-                      <ul className="space-y-2">
-                        {plan.features.map((feature, index) => (
-                          <li key={index} className="flex items-start gap-2 text-sm">
-                            <Check className="w-4 h-4 text-success shrink-0 mt-0.5" />
-                            <span>{feature}</span>
-                          </li>
-                        ))}
-                      </ul>
+                  {/* Trust Badges */}
+                  <div className="flex items-center gap-4 mt-6 pt-6 border-t border-border/50">
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <Shield className="w-4 h-4 text-success" />
+                      Secure Payment
                     </div>
-                  )}
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <Clock className="w-4 h-4 text-primary" />
+                      Instant Activation
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              {/* Dynamic Payment Instructions Card */}
+              {/* Payment Instructions Card */}
               <motion.div 
                 key={formData.paymentMethod}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.2 }}
-                className="bg-card rounded-2xl border p-6"
+                className="rounded-2xl border border-border/50 bg-card p-6 lg:p-8"
               >
-                <div className="flex items-center gap-3 mb-4">
+                <div className="flex items-center gap-3 mb-5">
                   <div 
-                    className="w-10 h-10 rounded-lg flex items-center justify-center"
+                    className="w-12 h-12 rounded-xl flex items-center justify-center"
                     style={{ backgroundColor: `${currentPaymentInfo.color}15` }}
                   >
-                    {formData.paymentMethod === "bank" ? (
-                      <Building2 className="w-5 h-5" style={{ color: currentPaymentInfo.color }} />
-                    ) : formData.paymentMethod === "card" ? (
-                      <CreditCard className="w-5 h-5" style={{ color: currentPaymentInfo.color }} />
-                    ) : (
-                      <Smartphone className="w-5 h-5" style={{ color: currentPaymentInfo.color }} />
-                    )}
+                    {currentPaymentMethod && <currentPaymentMethod.icon className="w-6 h-6" style={{ color: currentPaymentInfo.color }} />}
                   </div>
-                  <h3 className="font-semibold">{currentPaymentInfo.title}</h3>
+                  <div>
+                    <h3 className="font-bold">{currentPaymentInfo.title}</h3>
+                    <p className="text-xs text-muted-foreground">Follow these steps</p>
+                  </div>
                 </div>
 
                 <ol className="space-y-3">
                   {currentPaymentInfo.instructions.map((instruction, index) => (
                     <li key={index} className="flex gap-3 text-sm">
-                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-medium">
+                      <span 
+                        className="flex-shrink-0 w-6 h-6 rounded-full text-xs flex items-center justify-center font-bold text-primary-foreground"
+                        style={{ backgroundColor: currentPaymentInfo.color }}
+                      >
                         {index + 1}
                       </span>
-                      <span className="text-muted-foreground">{instruction}</span>
+                      <span className="text-muted-foreground pt-0.5">{instruction}</span>
                     </li>
                   ))}
                 </ol>
 
                 {currentPaymentInfo.accountNumber && (
-                  <div className="mt-6 p-4 bg-muted/50 rounded-xl">
+                  <div className="mt-6 p-4 rounded-xl bg-muted/50 border border-border/50">
                     <div className="flex justify-between items-center">
                       <div>
-                        <p className="text-xs text-muted-foreground mb-1">Account Number:</p>
-                        <p className="text-lg font-bold text-primary">{currentPaymentInfo.accountNumber}</p>
+                        <p className="text-xs text-muted-foreground mb-1">Account Number</p>
+                        <p 
+                          className="text-xl font-bold"
+                          style={{ color: currentPaymentInfo.color }}
+                        >
+                          {currentPaymentInfo.accountNumber}
+                        </p>
                       </div>
                       <Button
-                        variant="ghost"
-                        size="icon"
+                        variant="outline"
+                        size="sm"
                         onClick={copyAccountNumber}
-                        className="hover:bg-primary/10"
+                        className="gap-2"
                       >
                         <Copy className="w-4 h-4" />
+                        Copy
                       </Button>
                     </div>
                   </div>
@@ -342,74 +350,79 @@ const Checkout = () => {
               </motion.div>
             </motion.div>
 
-            {/* Checkout Form - Right Side */}
+            {/* Right Side - Checkout Form */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="lg:col-span-3"
             >
-              <div className="bg-card rounded-2xl border p-6 lg:p-8">
-                <h2 className="text-2xl font-bold mb-6">Complete Your Purchase</h2>
+              <div className="sticky top-28 rounded-3xl border border-border/50 bg-card p-6 lg:p-8 shadow-xl shadow-primary/5">
+                <h2 className="text-2xl font-bold mb-2">Complete Your Order</h2>
+                <p className="text-muted-foreground mb-8">Fill in your details to activate your plan</p>
 
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-5">
                   {/* Full Name */}
                   <div className="space-y-2">
-                    <Label htmlFor="fullName">
+                    <Label htmlFor="fullName" className="text-sm font-medium">
                       Full Name <span className="text-destructive">*</span>
                     </Label>
                     <Input
                       id="fullName"
-                      placeholder="John Doe"
+                      placeholder="Enter your full name"
                       value={formData.fullName}
                       onChange={(e) => handleInputChange("fullName", e.target.value)}
+                      className="h-12 rounded-xl"
                       required
                     />
                   </div>
 
                   {/* Email */}
                   <div className="space-y-2">
-                    <Label htmlFor="email">
+                    <Label htmlFor="email" className="text-sm font-medium">
                       Email Address <span className="text-destructive">*</span>
                     </Label>
                     <Input
                       id="email"
                       type="email"
-                      placeholder="john@example.com"
+                      placeholder="you@example.com"
                       value={formData.email}
                       onChange={(e) => handleInputChange("email", e.target.value)}
+                      className="h-12 rounded-xl"
                       required
                     />
                   </div>
 
                   {/* Phone */}
                   <div className="space-y-2">
-                    <Label htmlFor="phone">
+                    <Label htmlFor="phone" className="text-sm font-medium">
                       Phone Number <span className="text-destructive">*</span>
                     </Label>
                     <Input
                       id="phone"
                       type="tel"
-                      placeholder="01712345678"
+                      placeholder="01XXXXXXXXX"
                       value={formData.phone}
                       onChange={(e) => handleInputChange("phone", e.target.value)}
+                      className="h-12 rounded-xl"
                       required
                     />
                   </div>
 
                   {/* Community */}
                   <div className="space-y-2">
-                    <Label htmlFor="community">Which Community? (Optional)</Label>
+                    <Label htmlFor="community" className="text-sm font-medium">
+                      How did you find us?
+                    </Label>
                     <Select
                       value={formData.community}
                       onValueChange={(value) => handleInputChange("community", value)}
                     >
-                      <SelectTrigger>
-                        <SelectValue placeholder="None" />
+                      <SelectTrigger className="h-12 rounded-xl">
+                        <SelectValue placeholder="Select an option" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="none">None</SelectItem>
-                        <SelectItem value="facebook">Facebook Group</SelectItem>
+                        <SelectItem value="none">Prefer not to say</SelectItem>
+                        <SelectItem value="facebook">Facebook</SelectItem>
                         <SelectItem value="youtube">YouTube</SelectItem>
                         <SelectItem value="referral">Friend Referral</SelectItem>
                         <SelectItem value="other">Other</SelectItem>
@@ -419,27 +432,38 @@ const Checkout = () => {
 
                   {/* Payment Method */}
                   <div className="space-y-3">
-                    <Label>
+                    <Label className="text-sm font-medium">
                       Payment Method <span className="text-destructive">*</span>
                     </Label>
                     <RadioGroup
                       value={formData.paymentMethod}
                       onValueChange={(value) => handleInputChange("paymentMethod", value)}
-                      className="grid grid-cols-2 gap-3"
+                      className="grid grid-cols-3 gap-2"
                     >
                       {paymentMethods.map((method) => (
                         <Label
                           key={method.id}
                           htmlFor={method.id}
-                          className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                          className={`relative flex flex-col items-center gap-2 p-3 rounded-xl border-2 cursor-pointer transition-all ${
                             formData.paymentMethod === method.id
-                              ? "border-primary bg-primary/5"
-                              : "border-border hover:border-primary/50"
+                              ? "border-primary bg-primary/5 shadow-md"
+                              : "border-border/50 hover:border-primary/30"
                           }`}
                         >
-                          <RadioGroupItem value={method.id} id={method.id} />
-                          <method.icon className="w-5 h-5 text-muted-foreground" />
-                          <span className="font-medium">{method.name}</span>
+                          <RadioGroupItem value={method.id} id={method.id} className="sr-only" />
+                          <method.icon 
+                            className="w-5 h-5" 
+                            style={{ color: formData.paymentMethod === method.id ? method.color : undefined }}
+                          />
+                          <span className="text-xs font-medium text-center">{method.name}</span>
+                          {formData.paymentMethod === method.id && (
+                            <motion.div
+                              layoutId="paymentIndicator"
+                              className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-primary flex items-center justify-center"
+                            >
+                              <Check className="w-2.5 h-2.5 text-primary-foreground" />
+                            </motion.div>
+                          )}
                         </Label>
                       ))}
                     </RadioGroup>
@@ -448,24 +472,25 @@ const Checkout = () => {
                   {/* Transaction ID */}
                   {plan.priceNumber > 0 && (
                     <div className="space-y-2">
-                      <Label htmlFor="transactionId">
+                      <Label htmlFor="transactionId" className="text-sm font-medium">
                         Transaction ID <span className="text-destructive">*</span>
                       </Label>
                       <Input
                         id="transactionId"
-                        placeholder="Enter transaction ID from payment confirmation"
+                        placeholder="Enter your transaction ID"
                         value={formData.transactionId}
                         onChange={(e) => handleInputChange("transactionId", e.target.value)}
+                        className="h-12 rounded-xl"
                         required={plan.priceNumber > 0}
                       />
                       <p className="text-xs text-muted-foreground">
-                        Copy the Transaction ID from your payment confirmation message/SMS
+                        Find this in your payment confirmation SMS
                       </p>
                     </div>
                   )}
 
                   {/* Terms */}
-                  <p className="text-sm text-center text-muted-foreground">
+                  <p className="text-xs text-center text-muted-foreground">
                     By completing this purchase, you agree to our{" "}
                     <Link to="/terms" className="text-primary hover:underline">
                       Terms of Service
@@ -481,15 +506,23 @@ const Checkout = () => {
                     type="submit"
                     variant="gradient"
                     size="lg"
-                    className="w-full"
+                    className="w-full h-14 text-base rounded-xl shadow-lg shadow-primary/25"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? (
-                      "Processing..."
+                      <span className="flex items-center gap-2">
+                        <motion.span
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                        >
+                          ⏳
+                        </motion.span>
+                        Processing...
+                      </span>
                     ) : (
                       <>
-                        Complete Purchase - {plan.price}
-                        <ArrowLeft className="w-4 h-4 ml-2 rotate-180" />
+                        Complete Purchase — {plan.price}
+                        <ArrowLeft className="w-5 h-5 ml-2 rotate-180" />
                       </>
                     )}
                   </Button>

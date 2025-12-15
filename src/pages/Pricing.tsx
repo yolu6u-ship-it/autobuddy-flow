@@ -1,15 +1,16 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Check, Sparkles, Crown, Zap, Star, ArrowRight } from "lucide-react";
+import { Check, Sparkles, Crown, Zap, Star, ArrowRight, Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import PromoBanner from "@/components/ui/promo-banner";
 import { useRef, useState } from "react";
-import { plans } from "@/data/plans";
+import { plans, DISCOUNT_PERCENTAGE } from "@/data/plans";
 
 const Pricing = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [activeIndex, setActiveIndex] = useState(1); // Start with Starter (popular)
+  const [activeIndex, setActiveIndex] = useState(1);
 
   const handleScroll = () => {
     if (scrollRef.current) {
@@ -30,12 +31,109 @@ const Pricing = () => {
     }
   };
 
+  const PricingCard = ({ plan, index, isMobile = false }: { plan: typeof plans[0]; index: number; isMobile?: boolean }) => (
+    <motion.div
+      key={plan.name}
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: index * 0.1 }}
+      className={`relative flex flex-col h-full bg-card rounded-2xl border transition-all duration-300 ${
+        isMobile ? "flex-shrink-0 w-[85%] snap-center" : ""
+      } ${
+        plan.popular
+          ? "border-primary shadow-[0_0_40px_-12px_hsl(var(--primary))] lg:scale-105 z-10"
+          : "border-border/50 hover:border-primary/30 hover:shadow-card-hover"
+      }`}
+    >
+      {/* Popular indicator */}
+      {plan.popular && (
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-20">
+          <span className="inline-flex items-center gap-1 px-4 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-primary to-secondary text-primary-foreground shadow-glow">
+            <Zap className="w-3 h-3" />
+            Most Popular
+          </span>
+        </div>
+      )}
+
+      <div className="p-6 flex flex-col h-full">
+        {/* Badge */}
+        <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold w-fit mb-4 ${plan.badgeColor}`}>
+          {plan.name === "Lifetime" && <Crown className="w-3 h-3" />}
+          {plan.name === "Business" && <Star className="w-3 h-3" />}
+          {plan.badge}
+        </span>
+
+        {/* Plan Name & Description */}
+        <h3 className="text-xl font-bold mb-1">{plan.name}</h3>
+        <p className="text-sm text-muted-foreground mb-4">{plan.description}</p>
+
+        {/* Price Section */}
+        <div className="mb-6">
+          {plan.originalPrice && (
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-lg text-muted-foreground line-through">
+                {plan.originalPrice}
+              </span>
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-destructive/10 text-destructive">
+                <Gift className="w-3 h-3" />
+                {DISCOUNT_PERCENTAGE}% OFF
+              </span>
+            </div>
+          )}
+          <div className="flex items-baseline gap-1">
+            <span className="text-4xl font-extrabold gradient-text">{plan.price}</span>
+            <span className="text-muted-foreground">{plan.period}</span>
+          </div>
+          {plan.savings && (
+            <p className="text-sm font-medium text-success mt-1">
+              {plan.savings}
+            </p>
+          )}
+        </div>
+
+        {/* Features - Flex grow to push button to bottom */}
+        <ul className="space-y-3 mb-6 flex-grow">
+          {plan.features.map((feature) => (
+            <li key={feature} className="flex items-start gap-2 text-sm">
+              <Check className="w-4 h-4 text-success shrink-0 mt-0.5" />
+              <span>{feature}</span>
+            </li>
+          ))}
+        </ul>
+
+        {/* CTA - Always at bottom */}
+        <div className="mt-auto">
+          <Button
+            variant={plan.ctaVariant}
+            className="w-full"
+            asChild
+          >
+            <Link to={`/checkout?plan=${plan.id}`}>
+              {plan.cta}
+              <ArrowRight className="w-4 h-4 ml-1" />
+            </Link>
+          </Button>
+
+          {/* Note */}
+          {plan.note && (
+            <p className="text-xs text-muted-foreground text-center mt-3">
+              {plan.note}
+            </p>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
+
   return (
     <div className="min-h-screen bg-background">
+      {/* Grand Opening Banner */}
+      <PromoBanner discount={DISCOUNT_PERCENTAGE} />
+      
       <Header />
       
       <main className="pt-20 pb-16">
-        {/* Header Section - Reduced spacing on mobile */}
+        {/* Header Section */}
         <section className="py-8 md:py-16 relative overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(217,100%,50%,0.1),transparent_50%)]" />
           
@@ -62,7 +160,7 @@ const Pricing = () => {
           </div>
         </section>
 
-        {/* Pricing Cards - Premium Slider on Mobile */}
+        {/* Pricing Cards */}
         <section className="py-4 md:py-8">
           <div className="container mx-auto px-0 md:px-4">
             {/* Mobile Premium Slider */}
@@ -74,91 +172,11 @@ const Pricing = () => {
                 style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
               >
                 {plans.map((plan, index) => (
-                  <motion.div
-                    key={plan.name}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.4, delay: index * 0.05 }}
-                    className={`relative flex-shrink-0 w-[85%] snap-center bg-card rounded-3xl p-6 border-2 transition-all duration-300 ${
-                      plan.popular
-                        ? "border-primary shadow-[0_0_40px_-12px_hsl(var(--primary))]"
-                        : "border-border/50"
-                    }`}
-                  >
-                    {/* Badge */}
-                    <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold mb-4 ${plan.badgeColor}`}>
-                      {plan.name === "Lifetime" && <Crown className="w-3 h-3" />}
-                      {plan.name === "Business" && <Star className="w-3 h-3" />}
-                      {plan.badge}
-                    </span>
-
-                    {/* Plan Name */}
-                    <h3 className="text-xl font-bold mb-1">{plan.name}</h3>
-                    <p className="text-sm text-muted-foreground mb-4">{plan.description}</p>
-
-                    {/* Price */}
-                    <div className="mb-6">
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-4xl font-extrabold">{plan.price}</span>
-                        <span className="text-muted-foreground">{plan.period}</span>
-                      </div>
-                      {plan.originalPrice && (
-                        <div className="flex items-center gap-2 mt-1">
-                          <span className="text-sm text-muted-foreground line-through">
-                            {plan.originalPrice}
-                          </span>
-                          {plan.savings && (
-                            <span className="text-xs font-medium text-success bg-success/10 px-2 py-0.5 rounded-full">
-                              {plan.savings}
-                            </span>
-                          )}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Features */}
-                    <ul className="space-y-3 mb-6">
-                      {plan.features.map((feature) => (
-                        <li key={feature} className="flex items-start gap-2 text-sm">
-                          <Check className="w-4 h-4 text-success shrink-0 mt-0.5" />
-                          <span>{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-
-                    {/* CTA */}
-                    <Button
-                      variant={plan.ctaVariant}
-                      className="w-full"
-                      asChild
-                    >
-                      <Link to={`/checkout?plan=${plan.id}`}>
-                        {plan.cta}
-                        <ArrowRight className="w-4 h-4 ml-1" />
-                      </Link>
-                    </Button>
-
-                    {/* Note */}
-                    {plan.note && (
-                      <p className="text-xs text-muted-foreground text-center mt-3">
-                        {plan.note}
-                      </p>
-                    )}
-
-                    {/* Popular indicator */}
-                    {plan.popular && (
-                      <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-primary text-primary-foreground shadow-glow">
-                          <Zap className="w-3 h-3" />
-                          Most Popular
-                        </span>
-                      </div>
-                    )}
-                  </motion.div>
+                  <PricingCard key={plan.id} plan={plan} index={index} isMobile />
                 ))}
               </div>
 
-              {/* Premium Dot Indicators */}
+              {/* Dot Indicators */}
               <div className="flex justify-center gap-2 mt-2">
                 {plans.map((_, index) => (
                   <button
@@ -174,90 +192,10 @@ const Pricing = () => {
               </div>
             </div>
 
-            {/* Desktop Grid */}
-            <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+            {/* Desktop Grid - Equal height cards */}
+            <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 items-stretch">
               {plans.map((plan, index) => (
-                <motion.div
-                  key={plan.name}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className={`relative bg-card rounded-2xl p-6 border transition-all duration-300 hover:shadow-card-hover ${
-                    plan.popular
-                      ? "border-primary shadow-card lg:scale-105 z-10"
-                      : "border-border hover:border-primary/30"
-                  }`}
-                >
-                  {/* Badge */}
-                  <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold mb-4 ${plan.badgeColor}`}>
-                    {plan.name === "Lifetime" && <Crown className="w-3 h-3" />}
-                    {plan.name === "Business" && <Star className="w-3 h-3" />}
-                    {plan.badge}
-                  </span>
-
-                  {/* Plan Name */}
-                  <h3 className="text-xl font-bold mb-1">{plan.name}</h3>
-                  <p className="text-sm text-muted-foreground mb-4">{plan.description}</p>
-
-                  {/* Price */}
-                  <div className="mb-6">
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-4xl font-extrabold">{plan.price}</span>
-                      <span className="text-muted-foreground">{plan.period}</span>
-                    </div>
-                    {plan.originalPrice && (
-                      <div className="flex items-center gap-2 mt-1">
-                        <span className="text-sm text-muted-foreground line-through">
-                          {plan.originalPrice}
-                        </span>
-                        {plan.savings && (
-                          <span className="text-xs font-medium text-success bg-success/10 px-2 py-0.5 rounded-full">
-                            {plan.savings}
-                          </span>
-                        )}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Features */}
-                  <ul className="space-y-3 mb-6">
-                    {plan.features.map((feature) => (
-                      <li key={feature} className="flex items-start gap-2 text-sm">
-                        <Check className="w-4 h-4 text-success shrink-0 mt-0.5" />
-                        <span>{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  {/* CTA */}
-                  <Button
-                    variant={plan.ctaVariant}
-                    className="w-full"
-                    asChild
-                  >
-                    <Link to={`/checkout?plan=${plan.id}`}>
-                      {plan.cta}
-                      <ArrowRight className="w-4 h-4 ml-1" />
-                    </Link>
-                  </Button>
-
-                  {/* Note */}
-                  {plan.note && (
-                    <p className="text-xs text-muted-foreground text-center mt-3">
-                      {plan.note}
-                    </p>
-                  )}
-
-                  {/* Popular indicator */}
-                  {plan.popular && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-primary text-primary-foreground shadow-glow">
-                        <Zap className="w-3 h-3" />
-                        Most Popular
-                      </span>
-                    </div>
-                  )}
-                </motion.div>
+                <PricingCard key={plan.id} plan={plan} index={index} />
               ))}
             </div>
           </div>
