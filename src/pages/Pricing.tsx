@@ -4,7 +4,6 @@ import { Check, Sparkles, Crown, Zap, Star, ArrowRight, Gift } from "lucide-reac
 import { Button } from "@/components/ui/button";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import PromoBanner from "@/components/ui/promo-banner";
 import { useRef, useState } from "react";
 import { plans, DISCOUNT_PERCENTAGE } from "@/data/plans";
 
@@ -127,9 +126,6 @@ const Pricing = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Grand Opening Banner */}
-      <PromoBanner discount={DISCOUNT_PERCENTAGE} />
-      
       <Header />
       
       <main className="pt-20 pb-16">
